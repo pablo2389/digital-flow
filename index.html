@@ -219,22 +219,6 @@
     flex-wrap:wrap;
   }
 
-  .hero-tags{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    margin-top:36px;
-  }
-
-  .tag{
-    font-family:var(--font-mono);
-    font-size:12px;
-    padding:6px 12px;
-    border:1px solid var(--border);
-    border-radius:100px;
-    color:var(--text-dim);
-  }
-
   /* ---------- Demo de chat (signature element) ---------- */
   .chat-demo{
     background:var(--bg-elevated);
@@ -401,51 +385,56 @@
 
   .section-head p{ color:var(--text-dim); font-size:16px; }
 
-  /* ---------- Cómo funciona (flujo) ---------- */
-  .flow-row{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:0;
-    position:relative;
+  /* ---------- Por qué nace (bloque narrativo) ---------- */
+  .why-block{
+    max-width:740px;
   }
 
-  @media (max-width:860px){
-    .flow-row{ grid-template-columns:1fr; gap:32px; }
-    .flow-connector{ display:none; }
+  .why-text{
+    font-size:18px;
+    line-height:1.75;
+    color:var(--text-dim);
   }
 
-  .flow-step{
-    position:relative;
-    padding:28px 24px;
+  .why-text strong{ color:var(--text); }
+
+  /* ---------- Servicios reducidos ---------- */
+  .services-grid-4{
+    grid-template-columns:repeat(4,1fr);
+  }
+  @media (max-width:900px){ .services-grid-4{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:600px){ .services-grid-4{ grid-template-columns:1fr; } }
+
+  .services-note{
+    margin-top:28px;
+    color:var(--text-dim);
+    font-size:14.5px;
+  }
+
+  /* ---------- Addons simplificados ---------- */
+  .addons-simple{
     background:var(--bg-elevated);
     border:1px solid var(--border);
     border-radius:14px;
-  }
-
-  .flow-step .flow-icon{
-    width:44px; height:44px;
-    border-radius:10px;
+    padding:28px;
     display:flex;
-    align-items:center;
-    justify-content:center;
-    margin-bottom:18px;
+    flex-direction:column;
   }
 
-  .flow-step h3{ font-size:18px; margin-bottom:10px; }
-  .flow-step p{ color:var(--text-dim); font-size:14.5px; }
-
-  .flow-grid-wrap{
-    position:relative;
+  .addons-simple h4{
+    font-family:var(--font-display);
+    font-size:17px;
+    margin-bottom:12px;
   }
 
-  .flow-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:20px;
+  .addons-simple p{
+    font-size:14.5px;
+    color:var(--text-dim);
   }
-  @media (max-width:860px){ .flow-grid{ grid-template-columns:1fr; } }
 
-  /* ---------- Servicios ---------- */
+  .addons-simple strong{ color:var(--text); }
+
+
   .services-grid{
     display:grid;
     grid-template-columns:repeat(3,1fr);
@@ -543,29 +532,6 @@
     gap:16px;
   }
 
-  .addon-card{
-    background:var(--bg-elevated);
-    border:1px solid var(--border);
-    border-radius:14px;
-    padding:20px 22px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:16px;
-  }
-
-  .addon-card h4{ font-size:15px; margin-bottom:4px; font-family:var(--font-body); font-weight:600; }
-  .addon-card p{ font-size:13px; color:var(--text-dim); }
-  .addon-card .plus{
-    font-family:var(--font-mono);
-    color:var(--accent);
-    font-size:13px;
-    flex-shrink:0;
-    border:1px solid var(--border);
-    padding:5px 11px;
-    border-radius:100px;
-  }
-
   /* ---------- CTA final / contacto ---------- */
   .cta-final{
     text-align:center;
@@ -624,7 +590,7 @@
       Digital-Flow
     </div>
     <div class="links">
-      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#nosotros">Nosotros</a>
       <a href="#servicios">Servicios</a>
       <a href="#precios">Precios</a>
       <a href="#contacto">Contacto</a>
@@ -641,26 +607,19 @@
   <section class="hero">
     <div class="hero-grid">
       <div>
-        <div class="eyebrow">Landing pages con bot inteligente</div>
-        <h1>Tu negocio, <span class="accent">en flujo</span>, todo el día respondiendo solo.</h1>
-        <p class="lead">Armamos tu landing page conectada a Google Business con un bot que responde por reglas (JSON) y, si la pregunta es compleja, escala a un agente con IA real. Vos seguís atendiendo lo importante.</p>
+        <div class="eyebrow">Digital_Flow</div>
+        <h1>Tu negocio nunca pierde ventas, <span class="accent">sea la hora que sea.</span></h1>
+        <p class="lead">Creamos tu bot a medida, vinculado a WhatsApp, Telegram y redes — para que siempre haya alguien respondiendo, sin que necesites saber de tecnología.</p>
         <div class="hero-actions">
           <a href="#precios" class="btn btn-primary">Ver precio de entrada</a>
-          <a href="#como-funciona" class="btn btn-ghost">Cómo funciona el bot</a>
-        </div>
-        <div class="hero-tags">
-          <span class="tag">Google Business</span>
-          <span class="tag">Bots Telegram</span>
-          <span class="tag">SEO Local</span>
-          <span class="tag">Apps con IA</span>
-          <span class="tag">Dashboards</span>
+          <a href="#contacto" class="btn btn-ghost">Hablar con nosotros</a>
         </div>
       </div>
 
       <div class="chat-demo" role="region" aria-label="Demo del bot híbrido">
         <div class="chat-head">
           <span class="chat-dot"></span>
-          <span>digital-flow · bot híbrido (demo en vivo)</span>
+          <span>Probá el bot · respuestas instantáneas + IA</span>
         </div>
         <div class="chat-body" id="chatBody">
           <div class="msg bot"><span class="src json">JSON · instantáneo</span><br>¡Hola! Soy el bot de Digital-Flow. Probá preguntarme algo, o tocá una sugerencia abajo 👇</div>
@@ -680,37 +639,12 @@
     </div>
   </section>
 
-  <!-- COMO FUNCIONA -->
-  <section id="como-funciona">
+  <!-- POR QUÉ NACE DIGITAL_FLOW -->
+  <section id="nosotros">
     <div class="container">
-      <div class="section-head">
-        <div class="eyebrow">El flujo del bot</div>
-        <h2>Dos caminos, una sola conversación</h2>
-        <p>La mayoría de las preguntas de tus clientes se repiten: horarios, precios, ubicación. Esas las resuelve el motor JSON al instante, sin costo. Cuando la consulta es específica o ambigua, entra la IA — y si detecta intención real de compra, deriva directo a tu WhatsApp.</p>
-      </div>
-
-      <div class="flow-grid">
-        <div class="flow-step">
-          <div class="flow-icon" style="background:rgba(34,211,168,0.12);">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h7" stroke="#22D3A8" stroke-width="2" stroke-linecap="round"/></svg>
-          </div>
-          <h3>1. Pregunta frecuente → JSON</h3>
-          <p>El bot reconoce la intención (precio, horario, servicio) y responde en milisegundos con datos que vos mismo definís. Sin llamadas a APIs externas, sin demoras, sin costo por mensaje.</p>
-        </div>
-        <div class="flow-step">
-          <div class="flow-icon" style="background:rgba(99,102,241,0.15);">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3v3m0 12v3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M3 12h3m12 0h3M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1" stroke="#6366F1" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="3.2" stroke="#6366F1" stroke-width="2"/></svg>
-          </div>
-          <h3>2. Pregunta compleja → IA</h3>
-          <p>Si no matchea con nada del JSON, la consulta pasa a un agente con IA que entiende contexto, responde con naturalidad y conoce a fondo tus servicios.</p>
-        </div>
-        <div class="flow-step">
-          <div class="flow-icon" style="background:rgba(37,211,102,0.12);">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.5 8.5 0 1 1-3.8-7.1L21 3l-1.2 3.6A8.46 8.46 0 0 1 21 11.5Z" stroke="#25D366" stroke-width="2" stroke-linejoin="round"/></svg>
-          </div>
-          <h3>3. Interés real → WhatsApp</h3>
-          <p>Cuando la IA detecta que alguien quiere avanzar de verdad, le ofrece el link directo a tu WhatsApp o Telegram. El lead llega caliente, no frío.</p>
-        </div>
+      <div class="why-block">
+        <div class="eyebrow">Por qué existimos</div>
+        <p class="why-text">Estudiamos un problema real: muchos negocios pierden ventas por falta de respuesta en WhatsApp, no porque no quieran atender, sino porque no todos son developers ni pueden pagar lo que cuesta contratar uno. <strong>Digital_Flow nace para resolver eso.</strong> Creamos tu bot a medida — híbrido o 100% mecánico por respuestas predeterminadas — vinculado a WhatsApp, Telegram, correo, Instagram, Facebook o TikTok. Mientras tengas conexión a internet, tu bot está vendiendo por vos, a cualquier hora, cualquier día.</p>
       </div>
     </div>
   </section>
@@ -720,20 +654,14 @@
     <div class="container">
       <div class="section-head">
         <div class="eyebrow">Qué hacemos</div>
-        <h2>Todo lo que tu negocio necesita para vivir online</h2>
-        <p>La landing con bot es la puerta de entrada. A partir de ahí, sumamos lo que tu negocio necesite.</p>
+        <h2>Lo esencial para que tu negocio esté online</h2>
       </div>
 
-      <div class="services-grid">
+      <div class="services-grid services-grid-4">
         <div class="service-card">
           <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 1 0-18 0Z" stroke="currentColor" stroke-width="1.6"/><path d="M3 12h18M12 3a13 13 0 0 1 0 18 13 13 0 0 1 0-18Z" stroke="currentColor" stroke-width="1.6"/></svg>
           <h3>Google Business</h3>
           <p>Creamos, optimizamos o corregimos tu perfil para que aparezcas en búsquedas locales y Google Maps.</p>
-        </div>
-        <div class="service-card">
-          <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.4 8.4 0 1 1-3.8-7" stroke="currentColor" stroke-width="1.6"/><path d="m21 3-4 4M3 21l4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-          <h3>Bots de Telegram</h3>
-          <p>Automatización de pedidos, turnos, consultas o catálogos directo dentro de Telegram.</p>
         </div>
         <div class="service-card">
           <svg class="ic" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.6"/><path d="M9 9h.01M9 15h.01M14 9h2M14 15h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
@@ -741,36 +669,17 @@
           <p>Desde reglas simples por JSON hasta agentes conversacionales con IA que entienden contexto real.</p>
         </div>
         <div class="service-card">
-          <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M3 17l5-5 4 4 9-9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <h3>SEO local</h3>
-          <p>Que te encuentren cuando alguien busca tu rubro en tu zona, no solo cuando buscan tu nombre.</p>
-        </div>
-        <div class="service-card">
           <svg class="ic" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 21h8M12 18v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
           <h3>Landing pages</h3>
           <p>Páginas rápidas, livianas y enfocadas en convertir visitas en consultas reales.</p>
         </div>
         <div class="service-card">
-          <svg class="ic" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="9" rx="1.2" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="3" width="7" height="5" rx="1.2" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="12" width="7" height="9" rx="1.2" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="16" width="7" height="5" rx="1.2" stroke="currentColor" stroke-width="1.6"/></svg>
-          <h3>Dashboards</h3>
-          <p>Visualizá métricas de tu negocio en un panel claro, sin planillas sueltas ni reportes manuales.</p>
-        </div>
-        <div class="service-card">
-          <svg class="ic" viewBox="0 0 24 24" fill="none"><rect x="6" y="2" width="12" height="20" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M10 18h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-          <h3>Apps a medida</h3>
-          <p>Aplicaciones simples para resolver una necesidad puntual de tu operación diaria.</p>
-        </div>
-        <div class="service-card">
-          <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M3 8l9 6 9-6M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.6"/></svg>
-          <h3>API de WhatsApp</h3>
-          <p>Integración con WhatsApp Business API para automatizar respuestas a mayor escala.</p>
-        </div>
-        <div class="service-card">
-          <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="10" cy="7" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M17 8a4 4 0 0 1 0 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-          <h3>Redes sociales</h3>
-          <p>Armado o reorganización de tus perfiles para que se vean profesionales y conectados a tu landing.</p>
+          <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M3 17l5-5 4 4 9-9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h3>SEO local</h3>
+          <p>Que te encuentren cuando alguien busca tu rubro en tu zona, no solo cuando buscan tu nombre.</p>
         </div>
       </div>
+      <p class="services-note">¿Necesitás algo más específico —dashboards, apps a medida, API de WhatsApp o redes sociales? Contanos por el chat o por WhatsApp y lo vemos.</p>
     </div>
   </section>
 
@@ -779,8 +688,7 @@
     <div class="container">
       <div class="section-head">
         <div class="eyebrow">Precio de entrada</div>
-        <h2>Empezás por acá, después escalás lo que necesites</h2>
-        <p>Un precio claro para arrancar. El resto de los servicios se suman según lo que tu negocio realmente necesite.</p>
+        <h2>Empezás por acá</h2>
       </div>
 
       <div class="pricing-wrap">
@@ -798,35 +706,10 @@
           <a href="#contacto" class="btn btn-primary" style="width:100%;">Quiero esta landing</a>
         </div>
 
-        <div class="addons">
-          <div class="addon-card">
-            <div>
-              <h4>Agente de IA conversacional</h4>
-              <p>El bot pasa de reglas fijas a entender contexto real.</p>
-            </div>
-            <span class="plus">+ a medida</span>
-          </div>
-          <div class="addon-card">
-            <div>
-              <h4>Integración API de WhatsApp</h4>
-              <p>Automatizá respuestas directo en WhatsApp Business.</p>
-            </div>
-            <span class="plus">+ a medida</span>
-          </div>
-          <div class="addon-card">
-            <div>
-              <h4>Google Business desde cero</h4>
-              <p>Creamos y optimizamos tu perfil para SEO local.</p>
-            </div>
-            <span class="plus">+ a medida</span>
-          </div>
-          <div class="addon-card">
-            <div>
-              <h4>Redes sociales</h4>
-              <p>Armado o retoque de tus perfiles sociales.</p>
-            </div>
-            <span class="plus">+ a medida</span>
-          </div>
+        <div class="addons-simple">
+          <h4>¿Necesitás algo más?</h4>
+          <p>Sumamos <strong>agente de IA conversacional</strong>, <strong>integración con API de WhatsApp</strong>, <strong>armado de Google Business desde cero</strong> o <strong>gestión de redes sociales</strong> — todo a cotizar según lo que tu negocio precise.</p>
+          <a href="#contacto" class="btn btn-ghost" style="margin-top:18px;">Consultar por estos servicios</a>
         </div>
       </div>
     </div>
