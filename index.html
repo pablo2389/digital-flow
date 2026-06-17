@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital-Flow — Bots con IA, Landing Pages y Google Business para tu negocio</title>
+<meta name="description" content="Creamos tu landing page con bot inteligente, optimizamos tu Google Business y conectamos tu negocio con clientes via WhatsApp y Telegram. Empezá desde $35.000 ARS.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --bg: #0B1120;
+    --bg-elevated: #131C32;
+    --bg-elevated-2: #19233F;
+    --text: #E8EDF5;
+    --text-dim: #8C9AB8;
+    --accent: #22D3A8;
+    --accent-dim: #1A9D7E;
+    --accent-2: #6366F1;
+    --border: #232F4D;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+
+  a{ color:inherit; text-decoration:none; }
+
+  img{ max-width:100%; display:block; }
+
+  /* ---------- Utilidades ---------- */
+  .container{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 24px;
+  }
+
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:13px;
+    letter-spacing:0.08em;
+    color:var(--accent);
+    text-transform:uppercase;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:16px;
+  }
+
+  .eyebrow::before{
+    content:'';
+    width:6px; height:6px;
+    background:var(--accent);
+    border-radius:50%;
+    box-shadow:0 0 8px var(--accent);
+  }
+
+  h1,h2,h3{
+    font-family:var(--font-display);
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:14px 28px;
+    border-radius:10px;
+    font-family:var(--font-body);
+    font-weight:600;
+    font-size:15px;
+    cursor:pointer;
+    border:1px solid transparent;
+    transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+    white-space:nowrap;
+  }
+  .btn:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
+
+  .btn-primary{
+    background:var(--accent);
+    color:#06120F;
+  }
+  .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 8px 24px rgba(34,211,168,0.25); }
+
+  .btn-ghost{
+    background:transparent;
+    border-color:var(--border);
+    color:var(--text);
+  }
+  .btn-ghost:hover{ border-color:var(--accent); color:var(--accent); }
+
+  .btn-wsp{
+    background:#1E2A45;
+    color:var(--text);
+    border-color:var(--border);
+  }
+  .btn-wsp:hover{ border-color:#25D366; color:#25D366; }
+
+  .btn-tg{
+    background:#1E2A45;
+    color:var(--text);
+    border-color:var(--border);
+  }
+  .btn-tg:hover{ border-color:#34AADF; color:#34AADF; }
+
+  /* ---------- Nav ---------- */
+  header{
+    position:fixed;
+    top:0; left:0; right:0;
+    z-index:100;
+    background:rgba(11,17,32,0.75);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+  }
+
+  nav{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 24px;
+    max-width:1180px;
+    margin:0 auto;
+  }
+
+  .logo{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:19px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+
+  .logo-mark{
+    width:28px; height:28px;
+    position:relative;
+    flex-shrink:0;
+  }
+
+  nav .links{
+    display:flex;
+    gap:32px;
+    font-size:14px;
+    color:var(--text-dim);
+  }
+  nav .links a:hover{ color:var(--text); }
+
+  .nav-cta{ display:flex; gap:12px; }
+
+  @media (max-width:860px){
+    nav .links{ display:none; }
+  }
+
+  /* ---------- Hero ---------- */
+  #node-canvas{
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    z-index:0;
+    opacity:0.55;
+  }
+
+  .hero{
+    position:relative;
+    padding:160px 24px 100px;
+    min-height:92vh;
+    display:flex;
+    align-items:center;
+  }
+
+  .hero-grid{
+    display:grid;
+    grid-template-columns:1.1fr 1fr;
+    gap:64px;
+    align-items:center;
+    width:100%;
+    max-width:1180px;
+    margin:0 auto;
+  }
+
+  @media (max-width:900px){
+    .hero-grid{ grid-template-columns:1fr; }
+    .hero{ padding:140px 20px 60px; }
+  }
+
+  .hero h1{
+    font-size:clamp(34px, 5vw, 54px);
+    line-height:1.08;
+    margin-bottom:22px;
+  }
+
+  .hero h1 .accent{ color:var(--accent); }
+
+  .hero p.lead{
+    font-size:18px;
+    color:var(--text-dim);
+    max-width:480px;
+    margin-bottom:32px;
+  }
+
+  .hero-actions{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+
+  .hero-tags{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:36px;
+  }
+
+  .tag{
+    font-family:var(--font-mono);
+    font-size:12px;
+    padding:6px 12px;
+    border:1px solid var(--border);
+    border-radius:100px;
+    color:var(--text-dim);
+  }
+
+  /* ---------- Demo de chat (signature element) ---------- */
+  .chat-demo{
+    background:var(--bg-elevated);
+    border:1px solid var(--border);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,0.5);
+  }
+
+  .chat-head{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:16px 18px;
+    border-bottom:1px solid var(--border);
+    background:var(--bg-elevated-2);
+  }
+
+  .chat-dot{ width:10px; height:10px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent); }
+
+  .chat-head span{ font-family:var(--font-mono); font-size:13px; color:var(--text-dim); }
+
+  .chat-body{
+    padding:20px;
+    min-height:340px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    font-size:14.5px;
+  }
+
+  .msg{
+    max-width:82%;
+    padding:11px 15px;
+    border-radius:12px;
+    line-height:1.5;
+    animation:rise .35s ease both;
+  }
+
+  @keyframes rise{
+    from{ opacity:0; transform:translateY(8px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  .msg.user{
+    align-self:flex-end;
+    background:var(--accent-2);
+    color:#fff;
+    border-bottom-right-radius:4px;
+  }
+
+  .msg.bot{
+    align-self:flex-start;
+    background:var(--bg-elevated-2);
+    border:1px solid var(--border);
+    border-bottom-left-radius:4px;
+  }
+
+  .msg.bot .src{
+    display:inline-block;
+    font-family:var(--font-mono);
+    font-size:10.5px;
+    padding:2px 8px;
+    border-radius:100px;
+    margin-bottom:7px;
+    letter-spacing:0.03em;
+  }
+  .msg.bot .src.json{ background:rgba(34,211,168,0.12); color:var(--accent); }
+  .msg.bot .src.ia{ background:rgba(99,102,241,0.18); color:#A5A9F5; }
+
+  .msg.bot .wsp-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    margin-top:10px;
+    padding:8px 14px;
+    background:#1E2A45;
+    border:1px solid #25D366;
+    color:#25D366;
+    border-radius:8px;
+    font-size:13px;
+    font-weight:600;
+  }
+
+  .typing{
+    display:flex;
+    gap:4px;
+    padding:13px 16px;
+  }
+  .typing span{
+    width:6px; height:6px;
+    background:var(--text-dim);
+    border-radius:50%;
+    animation:blink 1.1s infinite ease-in-out;
+  }
+  .typing span:nth-child(2){ animation-delay:.15s; }
+  .typing span:nth-child(3){ animation-delay:.3s; }
+  @keyframes blink{ 0%,80%,100%{ opacity:.25 } 40%{ opacity:1 } }
+
+  .chat-input-row{
+    display:flex;
+    gap:10px;
+    padding:14px 16px;
+    border-top:1px solid var(--border);
+  }
+
+  .chat-input-row input{
+    flex:1;
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:11px 14px;
+    color:var(--text);
+    font-family:var(--font-body);
+    font-size:14px;
+  }
+  .chat-input-row input:focus{ outline:none; border-color:var(--accent); }
+  .chat-input-row input::placeholder{ color:var(--text-dim); }
+
+  .chat-input-row button{
+    background:var(--accent);
+    border:none;
+    color:#06120F;
+    width:42px; height:42px;
+    border-radius:8px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+  .chat-input-row button:hover{ filter:brightness(1.08); }
+
+  .chat-suggestions{
+    display:flex;
+    gap:8px;
+    padding:0 16px 16px;
+    flex-wrap:wrap;
+  }
+  .chip{
+    font-size:12.5px;
+    padding:7px 12px;
+    background:var(--bg-elevated-2);
+    border:1px solid var(--border);
+    border-radius:100px;
+    color:var(--text-dim);
+    cursor:pointer;
+    transition:border-color .15s, color .15s;
+  }
+  .chip:hover{ border-color:var(--accent); color:var(--accent); }
+
+  /* ---------- Secciones generales ---------- */
+  section{ position:relative; z-index:1; padding:100px 0; }
+
+  .section-head{
+    max-width:620px;
+    margin-bottom:56px;
+  }
+
+  .section-head h2{
+    font-size:clamp(28px,3.6vw,38px);
+    margin-bottom:14px;
+  }
+
+  .section-head p{ color:var(--text-dim); font-size:16px; }
+
+  /* ---------- Cómo funciona (flujo) ---------- */
+  .flow-row{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:0;
+    position:relative;
+  }
+
+  @media (max-width:860px){
+    .flow-row{ grid-template-columns:1fr; gap:32px; }
+    .flow-connector{ display:none; }
+  }
+
+  .flow-step{
+    position:relative;
+    padding:28px 24px;
+    background:var(--bg-elevated);
+    border:1px solid var(--border);
+    border-radius:14px;
+  }
+
+  .flow-step .flow-icon{
+    width:44px; height:44px;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:18px;
+  }
+
+  .flow-step h3{ font-size:18px; margin-bottom:10px; }
+  .flow-step p{ color:var(--text-dim); font-size:14.5px; }
+
+  .flow-grid-wrap{
+    position:relative;
+  }
+
+  .flow-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+  }
+  @media (max-width:860px){ .flow-grid{ grid-template-columns:1fr; } }
+
+  /* ---------- Servicios ---------- */
+  .services-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+  }
+  @media (max-width:900px){ .services-grid{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:600px){ .services-grid{ grid-template-columns:1fr; } }
+
+  .service-card{
+    background:var(--bg-elevated);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:26px;
+    transition:border-color .2s, transform .2s;
+  }
+  .service-card:hover{ border-color:var(--accent-dim); transform:translateY(-3px); }
+
+  .service-card .ic{
+    width:38px; height:38px;
+    margin-bottom:16px;
+    color:var(--accent);
+  }
+
+  .service-card h3{ font-size:16.5px; margin-bottom:8px; }
+  .service-card p{ font-size:14px; color:var(--text-dim); }
+
+  /* ---------- Precios ---------- */
+  .pricing-wrap{
+    display:grid;
+    grid-template-columns:1.1fr 1fr;
+    gap:28px;
+    align-items:stretch;
+  }
+  @media (max-width:900px){ .pricing-wrap{ grid-template-columns:1fr; } }
+
+  .price-hero{
+    background:linear-gradient(155deg, var(--bg-elevated) 0%, #16243B 100%);
+    border:1px solid var(--accent-dim);
+    border-radius:18px;
+    padding:40px;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .price-hero::before{
+    content:'';
+    position:absolute;
+    top:-40%; right:-30%;
+    width:300px; height:300px;
+    background:radial-gradient(circle, rgba(34,211,168,0.18), transparent 70%);
+  }
+
+  .price-hero .badge{
+    font-family:var(--font-mono);
+    font-size:12px;
+    color:var(--accent);
+    background:rgba(34,211,168,0.12);
+    padding:6px 12px;
+    border-radius:100px;
+    display:inline-block;
+    margin-bottom:20px;
+  }
+
+  .price-hero h3{ font-size:24px; margin-bottom:8px; }
+  .price-hero .desc{ color:var(--text-dim); font-size:14.5px; margin-bottom:26px; }
+
+  .price-amount{
+    font-family:var(--font-mono);
+    font-size:46px;
+    font-weight:600;
+    color:var(--text);
+    margin-bottom:6px;
+  }
+  .price-amount span{ font-size:18px; color:var(--text-dim); font-weight:500; }
+
+  .price-hero ul{
+    list-style:none;
+    margin:26px 0 30px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .price-hero ul li{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    font-size:14.5px;
+    color:var(--text);
+  }
+  .price-hero ul li svg{ flex-shrink:0; margin-top:2px; color:var(--accent); }
+
+  .addons{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+
+  .addon-card{
+    background:var(--bg-elevated);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:20px 22px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+  }
+
+  .addon-card h4{ font-size:15px; margin-bottom:4px; font-family:var(--font-body); font-weight:600; }
+  .addon-card p{ font-size:13px; color:var(--text-dim); }
+  .addon-card .plus{
+    font-family:var(--font-mono);
+    color:var(--accent);
+    font-size:13px;
+    flex-shrink:0;
+    border:1px solid var(--border);
+    padding:5px 11px;
+    border-radius:100px;
+  }
+
+  /* ---------- CTA final / contacto ---------- */
+  .cta-final{
+    text-align:center;
+    background:var(--bg-elevated);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:64px 32px;
+  }
+
+  .cta-final h2{ font-size:clamp(26px,3.4vw,36px); margin-bottom:14px; }
+  .cta-final p{ color:var(--text-dim); margin-bottom:32px; max-width:480px; margin-left:auto; margin-right:auto; }
+
+  .cta-actions{
+    display:flex;
+    gap:14px;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+
+  footer{
+    border-top:1px solid var(--border);
+    padding:32px 24px;
+    text-align:center;
+    color:var(--text-dim);
+    font-size:13px;
+    position:relative;
+    z-index:1;
+  }
+
+  .visually-hidden{
+    position:absolute;
+    width:1px; height:1px;
+    overflow:hidden;
+    clip:rect(0 0 0 0);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+    html{ scroll-behavior:auto; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="node-canvas" aria-hidden="true"></canvas>
+
+<header>
+  <nav>
+    <div class="logo">
+      <svg class="logo-mark" viewBox="0 0 28 28" fill="none">
+        <circle cx="6" cy="14" r="3" fill="#22D3A8"/>
+        <circle cx="22" cy="6" r="3" fill="#6366F1"/>
+        <circle cx="22" cy="22" r="3" fill="#6366F1"/>
+        <path d="M9 14L19 6M9 14L19 22" stroke="#3A4A70" stroke-width="1.5"/>
+      </svg>
+      Digital-Flow
+    </div>
+    <div class="links">
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#servicios">Servicios</a>
+      <a href="#precios">Precios</a>
+      <a href="#contacto">Contacto</a>
+    </div>
+    <div class="nav-cta">
+      <a href="#contacto" class="btn btn-primary" style="padding:10px 18px; font-size:14px;">Quiero mi landing</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow">Landing pages con bot inteligente</div>
+        <h1>Tu negocio, <span class="accent">en flujo</span>, todo el día respondiendo solo.</h1>
+        <p class="lead">Armamos tu landing page conectada a Google Business con un bot que responde por reglas (JSON) y, si la pregunta es compleja, escala a un agente con IA real. Vos seguís atendiendo lo importante.</p>
+        <div class="hero-actions">
+          <a href="#precios" class="btn btn-primary">Ver precio de entrada</a>
+          <a href="#como-funciona" class="btn btn-ghost">Cómo funciona el bot</a>
+        </div>
+        <div class="hero-tags">
+          <span class="tag">Google Business</span>
+          <span class="tag">Bots Telegram</span>
+          <span class="tag">SEO Local</span>
+          <span class="tag">Apps con IA</span>
+          <span class="tag">Dashboards</span>
+        </div>
+      </div>
+
+      <div class="chat-demo" role="region" aria-label="Demo del bot híbrido">
+        <div class="chat-head">
+          <span class="chat-dot"></span>
+          <span>digital-flow · bot híbrido (demo en vivo)</span>
+        </div>
+        <div class="chat-body" id="chatBody">
+          <div class="msg bot"><span class="src json">JSON · instantáneo</span><br>¡Hola! Soy el bot de Digital-Flow. Probá preguntarme algo, o tocá una sugerencia abajo 👇</div>
+        </div>
+        <div class="chat-suggestions" id="chatChips">
+          <span class="chip" data-q="¿Cuánto cuesta la landing?">¿Cuánto cuesta la landing?</span>
+          <span class="chip" data-q="¿Hacen bots de Telegram?">¿Hacen bots de Telegram?</span>
+          <span class="chip" data-q="Necesito algo más específico para mi local de comida">Algo más específico para mi negocio</span>
+        </div>
+        <div class="chat-input-row">
+          <input type="text" id="chatInput" placeholder="Escribí tu pregunta..." aria-label="Escribir mensaje al bot">
+          <button id="chatSend" aria-label="Enviar mensaje">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 11L21 3L13 21L11 13L3 11Z" stroke="#06120F" stroke-width="2" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section id="como-funciona">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">El flujo del bot</div>
+        <h2>Dos caminos, una sola conversación</h2>
+        <p>La mayoría de las preguntas de tus clientes se repiten: horarios, precios, ubicación. Esas las resuelve el motor JSON al instante, sin costo. Cuando la consulta es específica o ambigua, entra la IA — y si detecta intención real de compra, deriva directo a tu WhatsApp.</p>
+      </div>
+
+      <div class="flow-grid">
+        <div class="flow-step">
+          <div class="flow-icon" style="background:rgba(34,211,168,0.12);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h7" stroke="#22D3A8" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <h3>1. Pregunta frecuente → JSON</h3>
+          <p>El bot reconoce la intención (precio, horario, servicio) y responde en milisegundos con datos que vos mismo definís. Sin llamadas a APIs externas, sin demoras, sin costo por mensaje.</p>
+        </div>
+        <div class="flow-step">
+          <div class="flow-icon" style="background:rgba(99,102,241,0.15);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3v3m0 12v3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M3 12h3m12 0h3M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1" stroke="#6366F1" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="3.2" stroke="#6366F1" stroke-width="2"/></svg>
+          </div>
+          <h3>2. Pregunta compleja → IA</h3>
+          <p>Si no matchea con nada del JSON, la consulta pasa a un agente con IA que entiende contexto, responde con naturalidad y conoce a fondo tus servicios.</p>
+        </div>
+        <div class="flow-step">
+          <div class="flow-icon" style="background:rgba(37,211,102,0.12);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.5 8.5 0 1 1-3.8-7.1L21 3l-1.2 3.6A8.46 8.46 0 0 1 21 11.5Z" stroke="#25D366" stroke-width="2" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>3. Interés real → WhatsApp</h3>
+          <p>Cuando la IA detecta que alguien quiere avanzar de verdad, le ofrece el link directo a tu WhatsApp o Telegram. El lead llega caliente, no frío.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICIOS -->
+  <section id="servicios">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">Qué hacemos</div>
+        <h2>Todo lo que tu negocio necesita para vivir online</h2>
+        <p>La landing con bot es la puerta de entrada. A partir de ahí, sumamos lo que tu negocio necesite.</p>
+      </div>
+
+      <div class="services-grid">
+        <div class="service-card">
+          <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 1 0-18 0Z" stroke="currentColor" stroke-width="1.6"/><path d="M3 12h18M12 3a13 13 0 0 1 0 18 13 13 0 0 1 0-18Z" stroke="currentColor" stroke-width="1.6"/></svg>
+          <h3>Google Business</h3>
+          <p>Creamos, optimizamos o corregimos tu perfil para que aparezcas en búsquedas locales y Google Maps.</p>
+        </div>
+        <div class="service-card">
+          <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.4 8.4 0 1 1-3.8-7" stroke="currentColor" stroke-width="1.6"/><path d="m21 3-4 4M3 21l4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <h3>Bots de Telegram</h3>
+          <p>Automatización de pedidos, turnos, consultas o catálogos directo dentro de Telegram.</p>
+        </div>
+        <div class="service-card">
+          <svg class="ic" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.6"/><path d="M9 9h.01M9 15h.01M14 9h2M14 15h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <h3>Bots con o sin IA</h3>
+          <p>Desde reglas simples por JSON hasta agentes conversacionales con IA que entienden contexto real.</p>
+        </div>
+        <div class="service-card">
+          <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M3 17l5-5 4 4 9-9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h3>SEO local</h3>
+          <p>Que te encuentren cuando alguien busca tu rubro en tu zona, no solo cuando buscan tu nombre.</p>
+        </div>
+        <div class="service-card">
+          <svg class="ic" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 21h8M12 18v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <h3>Landing pages</h3>
+          <p>Páginas rápidas, livianas y enfocadas en convertir visitas en consultas reales.</p>
+        </div>
+        <div class="service-card">
+          <svg class="ic" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="9" rx="1.2" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="3" width="7" height="5" rx="1.2" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="12" width="7" height="9" rx="1.2" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="16" width="7" height="5" rx="1.2" stroke="currentColor" stroke-width="1.6"/></svg>
+          <h3>Dashboards</h3>
+          <p>Visualizá métricas de tu negocio en un panel claro, sin planillas sueltas ni reportes manuales.</p>
+        </div>
+        <div class="service-card">
+          <svg class="ic" viewBox="0 0 24 24" fill="none"><rect x="6" y="2" width="12" height="20" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M10 18h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <h3>Apps a medida</h3>
+          <p>Aplicaciones simples para resolver una necesidad puntual de tu operación diaria.</p>
+        </div>
+        <div class="service-card">
+          <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M3 8l9 6 9-6M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.6"/></svg>
+          <h3>API de WhatsApp</h3>
+          <p>Integración con WhatsApp Business API para automatizar respuestas a mayor escala.</p>
+        </div>
+        <div class="service-card">
+          <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="10" cy="7" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M17 8a4 4 0 0 1 0 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <h3>Redes sociales</h3>
+          <p>Armado o reorganización de tus perfiles para que se vean profesionales y conectados a tu landing.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRECIOS -->
+  <section id="precios">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">Precio de entrada</div>
+        <h2>Empezás por acá, después escalás lo que necesites</h2>
+        <p>Un precio claro para arrancar. El resto de los servicios se suman según lo que tu negocio realmente necesite.</p>
+      </div>
+
+      <div class="pricing-wrap">
+        <div class="price-hero">
+          <span class="badge">Más elegido para arrancar</span>
+          <h3>Landing + Bot Inteligente (JSON)</h3>
+          <p class="desc">Tu página lista para vincular a Google Business, con bot de respuestas automáticas configurado a medida de tu negocio.</p>
+          <div class="price-amount">$35.000<span> ARS</span></div>
+          <ul>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Landing page lista para publicar</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Bot con respuestas automáticas por JSON</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Preparada para vincular a Google Business</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Botones directos a WhatsApp y Telegram</li>
+          </ul>
+          <a href="#contacto" class="btn btn-primary" style="width:100%;">Quiero esta landing</a>
+        </div>
+
+        <div class="addons">
+          <div class="addon-card">
+            <div>
+              <h4>Agente de IA conversacional</h4>
+              <p>El bot pasa de reglas fijas a entender contexto real.</p>
+            </div>
+            <span class="plus">+ a medida</span>
+          </div>
+          <div class="addon-card">
+            <div>
+              <h4>Integración API de WhatsApp</h4>
+              <p>Automatizá respuestas directo en WhatsApp Business.</p>
+            </div>
+            <span class="plus">+ a medida</span>
+          </div>
+          <div class="addon-card">
+            <div>
+              <h4>Google Business desde cero</h4>
+              <p>Creamos y optimizamos tu perfil para SEO local.</p>
+            </div>
+            <span class="plus">+ a medida</span>
+          </div>
+          <div class="addon-card">
+            <div>
+              <h4>Redes sociales</h4>
+              <p>Armado o retoque de tus perfiles sociales.</p>
+            </div>
+            <span class="plus">+ a medida</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA / CONTACTO -->
+  <section id="contacto">
+    <div class="container">
+      <div class="cta-final">
+        <h2>¿Hablamos de tu negocio?</h2>
+        <p>Contame qué necesitás y te respondo directo, sin vueltas.</p>
+        <div class="cta-actions">
+          <a href="https://wa.me/5490000000000" target="_blank" rel="noopener" class="btn btn-wsp">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.5 8.5 0 1 1-3.8-7.1L21 3l-1.2 3.6A8.46 8.46 0 0 1 21 11.5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+            Escribir por WhatsApp
+          </a>
+          <a href="https://t.me/tu_usuario" target="_blank" rel="noopener" class="btn btn-tg">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+            Escribir por Telegram
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    Digital-Flow · Servicios IT, bots con IA y presencia digital local · {{AÑO}}
+  </div>
+</footer>
+
+<script>
+/* ======================================================
+   ANIMACIÓN DE FONDO: red de nodos con pulsos de datos
+   ====================================================== */
+(function(){
+  const canvas = document.getElementById('node-canvas');
+  const ctx = canvas.getContext('2d');
+  let w, h, nodes = [], pulses = [];
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function resize(){
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const NODE_COUNT = Math.min(38, Math.floor((w*h)/45000));
+  for(let i=0;i<NODE_COUNT;i++){
+    nodes.push({
+      x: Math.random()*w,
+      y: Math.random()*h,
+      vx: (Math.random()-0.5)*0.15,
+      vy: (Math.random()-0.5)*0.15
+    });
+  }
+
+  function spawnPulse(){
+    if(nodes.length < 2) return;
+    const a = nodes[Math.floor(Math.random()*nodes.length)];
+    const b = nodes[Math.floor(Math.random()*nodes.length)];
+    if(a===b) return;
+    pulses.push({a, b, t:0});
+  }
+
+  let frame = 0;
+  function draw(){
+    frame++;
+    ctx.clearRect(0,0,w,h);
+
+    // mover nodos
+    nodes.forEach(n=>{
+      n.x += n.vx; n.y += n.vy;
+      if(n.x<0||n.x>w) n.vx*=-1;
+      if(n.y<0||n.y>h) n.vy*=-1;
+    });
+
+    // lineas entre nodos cercanos
+    ctx.lineWidth = 1;
+    for(let i=0;i<nodes.length;i++){
+      for(let j=i+1;j<nodes.length;j++){
+        const dx = nodes[i].x-nodes[j].x, dy = nodes[i].y-nodes[j].y;
+        const dist = Math.sqrt(dx*dx+dy*dy);
+        if(dist < 180){
+          ctx.strokeStyle = `rgba(70,90,130,${0.12*(1-dist/180)})`;
+          ctx.beginPath();
+          ctx.moveTo(nodes[i].x, nodes[i].y);
+          ctx.lineTo(nodes[j].x, nodes[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // nodos
+    nodes.forEach(n=>{
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, 2, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(140,160,200,0.4)';
+      ctx.fill();
+    });
+
+    // pulsos viajando
+    pulses.forEach(p=>{
+      p.t += 0.012;
+      const x = p.a.x + (p.b.x-p.a.x)*p.t;
+      const y = p.a.y + (p.b.y-p.a.y)*p.t;
+      ctx.beginPath();
+      ctx.arc(x,y,2.6,0,Math.PI*2);
+      ctx.fillStyle = '#22D3A8';
+      ctx.shadowColor = '#22D3A8';
+      ctx.shadowBlur = 8;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    });
+    pulses = pulses.filter(p=>p.t<1);
+
+    if(frame % 70 === 0) spawnPulse();
+
+    if(!reduceMotion) requestAnimationFrame(draw);
+  }
+
+  if(!reduceMotion){
+    draw();
+  } else {
+    // dibuja un frame estático, sin animación continua
+    draw();
+  }
+})();
+
+/* ======================================================
+   BOT HÍBRIDO: JSON (reglas) + fallback IA
+   ====================================================== */
+
+// Base de conocimiento por reglas. Cada entrada tiene keywords
+// que disparan la respuesta. Editá esto para ajustar el bot.
+const KB = [
+  {
+    keywords: ['precio','cuesta','cuanto','vale','costo','arranca','desde'],
+    answer: "El servicio de entrada es la <strong>Landing + Bot Inteligente</strong> desde <strong>$35.000 ARS</strong>. Incluye landing lista para publicar, bot por JSON y vínculo con Google Business. Servicios extra (IA conversacional, WhatsApp API, redes) se cotizan aparte según necesidad."
+  },
+  {
+    keywords: ['telegram','bot de telegram'],
+    answer: "Sí, armamos <strong>bots de Telegram</strong> para pedidos, turnos, catálogos o consultas automatizadas. Pueden funcionar por reglas simples o con IA, según lo que necesite tu negocio."
+  },
+  {
+    keywords: ['google business','google maps','maps','gbp','perfil de negocio'],
+    answer: "Trabajamos la creación y optimización de tu <strong>perfil de Google Business</strong>: que aparezcas en Maps, en búsquedas locales, con fotos, horarios y categoría bien configurada."
+  },
+  {
+    keywords: ['horario','atienden','atencion','dias'],
+    answer: "Respondemos consultas todos los días por WhatsApp y Telegram. Los tiempos de entrega de cada proyecto se acuerdan al cotizar, según la complejidad."
+  },
+  {
+    keywords: ['seo','posicionamiento','aparecer en google','buscan'],
+    answer: "Hacemos <strong>SEO local</strong>: que tu negocio aparezca cuando alguien busca tu rubro en tu zona, no solo cuando ya conoce tu nombre."
+  },
+  {
+    keywords: ['whatsapp','wsp','api de whatsapp'],
+    answer: "Para WhatsApp ofrecemos desde el botón directo (incluido en la landing base) hasta integración con la <strong>API de WhatsApp Business</strong> para automatizar respuestas a mayor escala."
+  },
+  {
+    keywords: ['dashboard','panel','metricas','reportes'],
+    answer: "Armamos <strong>dashboards</strong> simples para que veas las métricas de tu negocio en un solo panel, sin depender de planillas sueltas."
+  },
+  {
+    keywords: ['app','aplicacion','aplicación'],
+    answer: "Desarrollamos <strong>apps a medida</strong>, simples y livianas, para resolver una necesidad puntual de tu operación diaria."
+  },
+  {
+    keywords: ['ia','inteligencia artificial','agente','chatbot inteligente'],
+    answer: "Sí, además del bot por reglas (JSON) ofrecemos un <strong>agente de IA conversacional</strong> que entiende contexto y responde con naturalidad. Se suma como servicio adicional a la landing base."
+  },
+  {
+    keywords: ['redes sociales','instagram','facebook'],
+    answer: "Armamos o reorganizamos tus <strong>redes sociales</strong> para que se vean profesionales y queden conectadas a tu landing y tu Google Business."
+  }
+];
+
+function matchKB(text){
+  const t = text.toLowerCase();
+  let best = null;
+  let bestScore = 0;
+  KB.forEach(entry=>{
+    let score = 0;
+    entry.keywords.forEach(k=>{
+      if(t.includes(k)) score++;
+    });
+    if(score > bestScore){
+      bestScore = score;
+      best = entry;
+    }
+  });
+  // requerimos al menos 1 keyword matcheada
+  return bestScore > 0 ? best.answer : null;
+}
+
+const chatBody = document.getElementById('chatBody');
+const chatInput = document.getElementById('chatInput');
+const chatSend = document.getElementById('chatSend');
+const chatChips = document.getElementById('chatChips');
+
+function addMessage(html, who, sourceTag){
+  const div = document.createElement('div');
+  div.className = 'msg ' + who;
+  if(who==='bot' && sourceTag){
+    const tagClass = sourceTag === 'IA' ? 'ia' : 'json';
+    const tagLabel = sourceTag === 'IA' ? 'IA · respuesta generada' : 'JSON · instantáneo';
+    div.innerHTML = `<span class="src ${tagClass}">${tagLabel}</span><br>${html}`;
+  } else {
+    div.innerHTML = html;
+  }
+  chatBody.appendChild(div);
+  chatBody.scrollTop = chatBody.scrollHeight;
+  return div;
+}
+
+function showTyping(){
+  const div = document.createElement('div');
+  div.className = 'msg bot';
+  div.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+  chatBody.appendChild(div);
+  chatBody.scrollTop = chatBody.scrollHeight;
+  return div;
+}
+
+// Endpoint de tu función serverless (Vercel). Ver /api/ask-ia.js
+const IA_ENDPOINT = '/api/ask-ia';
+
+async function askIA(question){
+  try {
+    const res = await fetch(IA_ENDPOINT, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ question })
+    });
+    if(!res.ok) throw new Error('IA endpoint error');
+    const data = await res.json();
+    return data.answer || "No pude generar una respuesta ahora. Probá escribirnos directo por WhatsApp.";
+  } catch(err){
+    return "Por ahora no puedo conectarme con el agente de IA (esto es solo una demo de frontend). En la versión real, este mensaje se resuelve con tu función serverless conectada a Gemini. Mientras tanto, escribinos directo: <a class='wsp-link' href='https://wa.me/5490000000000' target='_blank' rel='noopener'>Hablar por WhatsApp →</a>";
+  }
+}
+
+async function handleUserMessage(text){
+  if(!text.trim()) return;
+  addMessage(escapeHTML(text), 'user');
+  chatInput.value = '';
+
+  const typingEl = showTyping();
+
+  // simulamos un pequeño delay para que se note el matcheo (UX)
+  await new Promise(r=>setTimeout(r, 350));
+
+  const kbAnswer = matchKB(text);
+
+  if(kbAnswer){
+    typingEl.remove();
+    addMessage(kbAnswer, 'bot', 'JSON');
+  } else {
+    // no matcheó nada conocido -> fallback a IA
+    await new Promise(r=>setTimeout(r, 500));
+    const iaAnswer = await askIA(text);
+    typingEl.remove();
+    addMessage(iaAnswer, 'bot', 'IA');
+  }
+}
+
+function escapeHTML(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+chatSend.addEventListener('click', ()=> handleUserMessage(chatInput.value));
+chatInput.addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter') handleUserMessage(chatInput.value);
+});
+
+chatChips.querySelectorAll('.chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    handleUserMessage(chip.getAttribute('data-q'));
+  });
+});
+
+// Año dinámico en footer
+document.querySelector('footer .container').innerHTML =
+  document.querySelector('footer .container').innerHTML.replace('{{AÑO}}', new Date().getFullYear());
+</script>
+
+</body>
+</html>
