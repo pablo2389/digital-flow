@@ -69,7 +69,7 @@ async function callGemini(apiKey, question) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ role: 'user', parts: [{ text: `${SYSTEM_CONTEXT}\n\nPregunta del usuario: ${question}` }] }],
-        generationConfig: { maxOutputTokens: 200, temperature: 0.4 }
+        generationConfig: { maxOutputTokens: 350, temperature: 0.4 }
       }),
       signal: controller.signal
     });
@@ -104,7 +104,7 @@ async function callGroq(apiKey, question) {
           { role: 'system', content: SYSTEM_CONTEXT },
           { role: 'user', content: question }
         ],
-        max_tokens: 200,
+        max_tokens: 350,
         temperature: 0.4
       }),
       signal: controller.signal
