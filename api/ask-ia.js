@@ -1,5 +1,5 @@
 // api/ask-ia.js
-// Función serverless de Vercel optimizada con Timeouts y mejor flujo de fallbacks.
+// Flujo optimizado: Gemini (Principal) -> Groq (Respaldo IA) -> Diccionario Local (Emergencia)
 
 const SYSTEM_CONTEXT = `
 Sos el asistente virtual de Digital-Flow, un negocio de servicios IT que ofrece:
@@ -14,106 +14,90 @@ Sos el asistente virtual de Digital-Flow, un negocio de servicios IT que ofrece:
 
 Reglas:
 - Respondé SIEMPRE en español, tono cercano y profesional, breve (máximo 3 oraciones).
-- Solo hablás de los servicios de Digital-Flow. Si preguntan algo totalmente ajeno, redirigí amablemente al tema.
+- Solo hablás de los servicios de Digital-Flow.
 - Si detectás que la persona muestra intención real de contratar (quiere avanzar, pide precio final, dice "quiero arrancar", "cómo contrato", etc.), agregá al final exactamente esta frase: "Te paso directo con nosotros por WhatsApp: https://wa.me/5492616616758"
 - No inventes precios de servicios que no sean el de $35.000 ARS (ese es el único precio fijo conocido; el resto es "a cotizar").
 `;
 
 const GEMINI_MODEL = 'gemini-2.5-flash';
 const GROQ_MODEL = 'llama-3.3-70b-versatile';
-const MAX_RETRIES = 2; 
-const RETRY_DELAY_MS = 600; 
-const PROVIDER_TIMEOUT_MS = 3500; // 3.5 segundos máximo por proveedor para evitar el límite de 10s de Vercel
+const PROVIDER_TIMEOUT_MS = 3000; // 3 segundos de tolerancia por proveedor
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+// ---------- DICCIONARIO LOCAL DE EMERGENCIA ----------
+const LOCAL_DICTIONARY = {
+  precio: "Nuestra landing page con bot inteligente tiene un valor de entrada de $35.000 ARS. El resto de los servicios se cotizan a medida según tus necesidades.",
+  landing: "Ofrecemos landing pages profesionales con bot inteligente integrado por $35.000 ARS, ideal para captar clientes en piloto automático.",
+  bot: "Desarrollamos bots inteligentes para Telegram y WhatsApp Business, automatizando tus respuestas y mejorando tu atención al cliente.",
+  redes: "Nos encargamos del armado, optimización y gestión de tus redes sociales para mejorar la presencia digital de tu negocio.",
+  google: "Optimizamos tu perfil de Google Business y SEO local para que aparezcas en los primeros lugares cuando busquen tus servicios.",
+  contacto: "Podés comunicarte directamente con nosotros para coordinar. Te dejo nuestro WhatsApp: https://wa.me/5492616616758",
+  defecto: "¡Hola! Somos Digital-Flow. Ofrecemos landing pages con bot por $35.000 ARS, desarrollo de apps, bots de WhatsApp/Telegram y gestión de redes. ¿En qué servicio estás interesado?"
+};
+
+function getLocalFallbackResponse(question) {
+  const q = question.toLowerCase();
+  let baseAnswer = LOCAL_DICTIONARY.defecto;
+
+  if (q.includes("precio") || q.includes("cuanto cuesta") || q.includes("valor")) {
+    baseAnswer = LOCAL_DICTIONARY.precio;
+  } else if (q.includes("landing") || q.includes("pagina") || q.includes("web")) {
+    baseAnswer = LOCAL_DICTIONARY.landing;
+  } else if (q.includes("bot") || q.includes("telegram") || q.includes("whatsapp")) {
+    baseAnswer = LOCAL_DICTIONARY.bot;
+  } else if (q.includes("redes") || q.includes("instagram") || q.includes("facebook")) {
+    baseAnswer = LOCAL_DICTIONARY.redes;
+  } else if (q.includes("google") || q.includes("mapa") || q.includes("seo") || q.includes("local")) {
+    baseAnswer = LOCAL_DICTIONARY.google;
+  } else if (q.includes("contacto") || q.includes("telefono") || q.includes("mensaje") || q.includes("llamar")) {
+    baseAnswer = LOCAL_DICTIONARY.contacto;
+  }
+
+  if (q.includes("quiero") || q.includes("contratar") || q.includes("comprar") || q.includes("arrancar")) {
+    baseAnswer += " Te paso directo con nosotros por WhatsApp: https://wa.me/5492616616758";
+  }
+
+  return baseAnswer;
 }
 
 // ---------- Proveedor 1: Gemini ----------
 async function callGemini(apiKey, question) {
-  let lastErrorText = '';
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), PROVIDER_TIMEOUT_MS);
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ role: 'user', parts: [{ text: `${SYSTEM_CONTEXT}\n\nPregunta del usuario: ${question}` }] }],
+        generationConfig: { maxOutputTokens: 200, temperature: 0.4 }
+      }),
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
 
-  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-    // Creamos un controlador para abortar la petición si tarda demasiado
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), PROVIDER_TIMEOUT_MS);
-
-    try {
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [
-              {
-                role: 'user',
-                parts: [{ text: `${SYSTEM_CONTEXT}\n\nPregunta del usuario: ${question}` }]
-              }
-            ],
-            generationConfig: { maxOutputTokens: 200, temperature: 0.4 }
-          }),
-          signal: controller.signal // Asignamos el signal de aborto
-        }
-      );
-
-      clearTimeout(timeoutId);
-
-      if (res.ok) {
-        const data = await res.json();
-        const answer = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-        if (answer) return { ok: true, answer };
-        lastErrorText = 'Respuesta vacía de Gemini';
-      } else {
-        lastErrorText = await res.text();
-        
-        // CRÍTICO: Si el error es 429 (Cuota Diaria Excedida), NO tiene sentido reintentar.
-        // Saltamos directo al fallback de Groq para ahorrar tiempo.
-        if (res.status === 429) {
-          console.warn('Gemini sin cuota diaria (429). Saltando directo a Groq...');
-          return { ok: false, errorText: lastErrorText };
-        }
-      }
-
-      // Si es un error 503 (Alta demanda temporal de la API), sí podemos reintentar.
-      const isRetryable = res.status === 503;
-      console.warn(`Gemini intento ${attempt + 1}/${MAX_RETRIES + 1} falló de forma intermitente:`, lastErrorText);
-
-      if (!isRetryable || attempt === MAX_RETRIES) {
-        return { ok: false, errorText: lastErrorText };
-      }
-
-    } catch (err) {
-      clearTimeout(timeoutId);
-      if (err.name === 'AbortError') {
-        lastErrorText = 'Timeout excedido en Gemini';
-        console.warn('Gemini tardó demasiado en responder (Timeout).');
-      } else {
-        lastErrorText = String(err);
-        console.warn('Error de red en Gemini:', err);
-      }
-
-      if (attempt === MAX_RETRIES) return { ok: false, errorText: lastErrorText };
+    if (!res.ok) {
+      console.warn(`Gemini falló con estado ${res.status}. Pasando al siguiente recurso...`);
+      return { ok: false };
     }
 
-    await sleep(RETRY_DELAY_MS * (attempt + 1));
+    const data = await res.json();
+    const answer = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    return answer ? { ok: true, answer } : { ok: false };
+  } catch (err) {
+    clearTimeout(timeoutId);
+    console.error("Error o Timeout en Gemini:", err.message);
+    return { ok: false };
   }
-
-  return { ok: false, errorText: lastErrorText };
 }
 
-// ---------- Proveedor 2: Groq (respaldo) ----------
+// ---------- Proveedor 2: Groq ----------
 async function callGroq(apiKey, question) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), PROVIDER_TIMEOUT_MS);
-
   try {
     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
       body: JSON.stringify({
         model: GROQ_MODEL,
         messages: [
@@ -125,78 +109,51 @@ async function callGroq(apiKey, question) {
       }),
       signal: controller.signal
     });
-
     clearTimeout(timeoutId);
 
     if (!res.ok) {
-      const errText = await res.text();
-      console.error('Groq falló de forma crítica:', errText);
-      return { ok: false, errorText: errText };
+      console.warn(`Groq falló con estado ${res.status}.`);
+      return { ok: false };
     }
 
     const data = await res.json();
     const answer = data?.choices?.[0]?.message?.content?.trim();
-    if (!answer) return { ok: false, errorText: 'Respuesta vacía de Groq' };
-
-    return { ok: true, answer };
-
+    return answer ? { ok: true, answer } : { ok: false };
   } catch (err) {
     clearTimeout(timeoutId);
-    if (err.name === 'AbortError') {
-      console.error('Groq tardó demasiado en responder (Timeout).');
-      return { ok: false, errorText: 'Timeout excedido en Groq' };
-    }
-    console.error('Error inesperado llamando a Groq:', err);
-    return { ok: false, errorText: String(err) };
+    console.error("Error o Timeout en Groq:", err.message);
+    return { ok: false };
   }
 }
 
+// ---------- Handler Servidor Principal ----------
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Método no permitido' });
-  }
-
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Método no permitido' });
+  
   const { question } = req.body || {};
-
   if (!question || typeof question !== 'string' || question.trim().length === 0) {
     return res.status(400).json({ error: 'Falta la pregunta' });
   }
 
-  const geminiKey = process.env.GEMINI_API_KEY;
-  const groqKey = process.env.GROQ_API_KEY;
-
-  const fallbackAnswer =
-    "Esa consulta necesita un poco más de detalle de nuestro lado. Para no hacerte esperar, escribinos directo y te respondemos al toque: <a class='wsp-link' href='https://wa.me/5492616616758' target='_blank' rel='noopener'>Hablar por WhatsApp →</a>";
-
-  try {
-    // 1) Intentar con Gemini
-    if (geminiKey) {
-      const geminiResult = await callGemini(geminiKey, question);
-      if (geminiResult.ok) {
-        return res.status(200).json({ answer: geminiResult.answer, provider: 'gemini' });
-      }
-      // Usamos console.warn para que tus logs diarios queden limpios y no asusten en Vercel
-      console.warn('Gemini no disponible, intentando activar respaldo con Groq...');
-    } else {
-      console.warn('GEMINI_API_KEY no configurada, probando con Groq...');
+  // 1) Intentar con Gemini
+  if (process.env.GEMINI_API_KEY) {
+    const geminiResult = await callGemini(process.env.GEMINI_API_KEY, question);
+    if (geminiResult.ok) {
+      return res.status(200).json({ answer: geminiResult.answer, provider: 'gemini' });
     }
-
-    // 2) Probar con Groq
-    if (groqKey) {
-      const groqResult = await callGroq(groqKey, question);
-      if (groqResult.ok) {
-        return res.status(200).json({ answer: groqResult.answer, provider: 'groq' });
-      }
-      console.error('Groq también falló en el proceso.');
-    } else {
-      console.error('GROQ_API_KEY no configurada.');
-    }
-
-    // 3) Ambos fallaron de verdad: devolvemos tu lindo mensaje sin romper la experiencia del cliente
-    return res.status(200).json({ answer: fallbackAnswer, provider: 'none' });
-
-  } catch (err) {
-    console.error('Error crítico e inesperado en el handler general:', err);
-    return res.status(200).json({ answer: fallbackAnswer, provider: 'none' });
   }
+
+  // 2) Si Gemini falla o agota cuota, intentar con Groq
+  if (process.env.GROQ_API_KEY) {
+    console.log("Gemini no disponible. Ejecutando consulta de respaldo en Groq...");
+    const groqResult = await callGroq(process.env.GROQ_API_KEY, question);
+    if (groqResult.ok) {
+      return res.status(200).json({ answer: groqResult.answer, provider: 'groq' });
+    }
+  }
+
+  // 3) Respaldo Absoluto Local (Por si caen ambas APIs)
+  console.error('Alerta: Las APIs de IA fallaron. Activando diccionario inteligente de emergencia.');
+  const finalEmergencyAnswer = getLocalFallbackResponse(question);
+  return res.status(200).json({ answer: finalEmergencyAnswer, provider: 'local_dictionary' });
 }
