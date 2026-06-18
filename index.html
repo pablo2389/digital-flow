@@ -848,57 +848,86 @@
 
 // Base de conocimiento por reglas. Cada entrada tiene keywords
 // que disparan la respuesta. Editá esto para ajustar el bot.
+// Las keywords van sin tildes porque normalizeText() las saca antes de comparar.
 const KB = [
   {
-    keywords: ['precio','cuesta','cuanto','vale','costo','arranca','desde'],
+    keywords: ['precio','precios','cuesta','cuanto','cuanto sale','vale','costo','arranca','desde','tarifa','presupuesto','sale'],
     answer: "El servicio de entrada es la <strong>Landing + Bot Inteligente</strong> desde <strong>$35.000 ARS</strong>. Incluye landing lista para publicar, bot por JSON y vínculo con Google Business. Servicios extra (IA conversacional, WhatsApp API, redes) se cotizan aparte según necesidad."
   },
   {
-    keywords: ['telegram','bot de telegram'],
+    keywords: ['telegram','bot de telegram','tlgram','telgram'],
     answer: "Sí, armamos <strong>bots de Telegram</strong> para pedidos, turnos, catálogos o consultas automatizadas. Pueden funcionar por reglas simples o con IA, según lo que necesite tu negocio."
   },
   {
-    keywords: ['google business','google maps','maps','gbp','perfil de negocio'],
+    keywords: ['google business','google maps','maps','gbp','perfil de negocio','mi negocio en google','aparecer en maps','ficha de google'],
     answer: "Trabajamos la creación y optimización de tu <strong>perfil de Google Business</strong>: que aparezcas en Maps, en búsquedas locales, con fotos, horarios y categoría bien configurada."
   },
   {
-    keywords: ['horario','atienden','atencion','dias'],
+    keywords: ['horario','horarios','atienden','atencion','dias','que dias','a que hora','cuando atienden'],
     answer: "Respondemos consultas todos los días por WhatsApp y Telegram. Los tiempos de entrega de cada proyecto se acuerdan al cotizar, según la complejidad."
   },
   {
-    keywords: ['seo','posicionamiento','aparecer en google','buscan'],
+    keywords: ['seo','posicionamiento','aparecer en google','buscan','salir primero en google','que me encuentren'],
     answer: "Hacemos <strong>SEO local</strong>: que tu negocio aparezca cuando alguien busca tu rubro en tu zona, no solo cuando ya conoce tu nombre."
   },
   {
-    keywords: ['whatsapp','wsp','api de whatsapp'],
+    keywords: ['whatsapp','wsp','wasap','watsap','api de whatsapp','whatsapp business'],
     answer: "Para WhatsApp ofrecemos desde el botón directo (incluido en la landing base) hasta integración con la <strong>API de WhatsApp Business</strong> para automatizar respuestas a mayor escala."
   },
   {
-    keywords: ['dashboard','panel','metricas','reportes'],
+    keywords: ['dashboard','panel','metricas','reportes','estadisticas','informes'],
     answer: "Armamos <strong>dashboards</strong> simples para que veas las métricas de tu negocio en un solo panel, sin depender de planillas sueltas."
   },
   {
-    keywords: ['app','aplicacion','aplicación'],
+    keywords: ['app','aplicacion','aplicacion movil','programa a medida','sistema a medida'],
     answer: "Desarrollamos <strong>apps a medida</strong>, simples y livianas, para resolver una necesidad puntual de tu operación diaria."
   },
   {
-    keywords: ['ia','inteligencia artificial','agente','chatbot inteligente'],
+    keywords: ['ia','inteligencia artificial','agente','chatbot inteligente','bot inteligente','asistente virtual'],
     answer: "Sí, además del bot por reglas (JSON) ofrecemos un <strong>agente de IA conversacional</strong> que entiende contexto y responde con naturalidad. Se suma como servicio adicional a la landing base."
   },
   {
-    keywords: ['redes sociales','instagram','facebook'],
+    keywords: ['redes sociales','instagram','facebook','tiktok','insta','face'],
     answer: "Armamos o reorganizamos tus <strong>redes sociales</strong> para que se vean profesionales y queden conectadas a tu landing y tu Google Business."
+  },
+  {
+    keywords: ['hola','buenas','buen dia','buenas tardes','buenas noches','que tal'],
+    answer: "¡Hola! Soy el bot de Digital-Flow 👋 Contame qué necesitás para tu negocio (landing, bot, Google Business, redes) y te ayudo, o tocá una de las sugerencias de abajo."
+  },
+  {
+    keywords: ['gracias','muchas gracias','genial','buenisimo','excelente'],
+    answer: "¡De nada! Si te interesa avanzar con algún servicio, escribinos por <a class='wsp-link' href='https://wa.me/5492616616758' target='_blank' rel='noopener'>WhatsApp →</a> y lo charlamos directo."
+  },
+  {
+    keywords: ['quiero contratar','como contrato','quiero arrancar','quiero empezar','como empiezo','como hago para empezar','quiero avanzar'],
+    answer: "¡Buenísimo! Para arrancar lo más simple es coordinar directo. <a class='wsp-link' href='https://wa.me/5492616616758' target='_blank' rel='noopener'>Hablar por WhatsApp →</a> y vemos los detalles de tu negocio."
+  },
+  {
+    keywords: ['quien sos','que es digital flow','que es esto','de que se trata','que hacen ustedes'],
+    answer: "Somos <strong>Digital_Flow</strong>: armamos landing pages con bot inteligente, Google Business, SEO local y automatización para que tu negocio no pierda clientes por falta de respuesta a tiempo."
+  },
+  {
+    keywords: ['mendoza','local','negocio local','zona','provincia'],
+    answer: "Trabajamos con negocios locales (Mendoza y alrededores, también a distancia). Armamos tu presencia digital completa: landing, bot, Google Business y SEO local."
   }
 ];
 
+// Saca tildes y pasa a minúsculas, para que "Cuánto" matchee igual que "cuanto".
+function normalizeText(str){
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
 function matchKB(text){
-  const t = text.toLowerCase();
+  const t = normalizeText(text);
   let best = null;
   let bestScore = 0;
   KB.forEach(entry=>{
     let score = 0;
     entry.keywords.forEach(k=>{
-      if(t.includes(k)) score++;
+      if(t.includes(normalizeText(k))) score++;
     });
     if(score > bestScore){
       bestScore = score;
@@ -950,9 +979,9 @@ async function askIA(question){
     });
     if(!res.ok) throw new Error('IA endpoint error');
     const data = await res.json();
-    return data.answer || "No pude generar una respuesta ahora. Probá escribirnos directo por WhatsApp.";
+    return data.answer || "Esa consulta es bastante específica. Para darte la mejor respuesta, escribinos directo: <a class='wsp-link' href='https://wa.me/5492616616758' target='_blank' rel='noopener'>Hablar por WhatsApp →</a>";
   } catch(err){
-    return "Por ahora no puedo conectarme con el agente de IA (esto es solo una demo de frontend). En la versión real, este mensaje se resuelve con tu función serverless conectada a Gemini. Mientras tanto, escribinos directo: <a class='wsp-link' href='https://wa.me/5492616616758' target='_blank' rel='noopener'>Hablar por WhatsApp →</a>";
+    return "Justo ahora tenemos mucha demanda en el asistente. Para no hacerte esperar, escribinos directo y te respondemos al toque: <a class='wsp-link' href='https://wa.me/5492616616758' target='_blank' rel='noopener'>Hablar por WhatsApp →</a>";
   }
 }
 
