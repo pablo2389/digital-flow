@@ -24,6 +24,64 @@ Reglas:
 - No inventes precios de servicios que no sean el de $35.000 ARS (ese es el único precio fijo conocido; el resto es "a cotizar").
 `;
 
+const MODEL = 'gemini-2.5-flash';
+const MAX_RETRIES = 2; // intentos adicionales además del primero
+const RETRY_DELAY_MS = 600; // espera base entre reintentos
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Llama a Gemini. Si responde 503 (alta demanda) o 429 (rate limit),
+// reintenta con espera progresiva antes de rendirse.
+async function callGeminiWithRetry(apiKey, question) {
+  let lastErrorText = '';
+
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    const geminiRes = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [
+            {
+              role: 'user',
+              parts: [{ text: `${SYSTEM_CONTEXT}\n\nPregunta del usuario: ${question}` }]
+            }
+          ],
+          generationConfig: {
+            maxOutputTokens: 200,
+            temperature: 0.4
+          }
+        })
+      }
+    );
+
+    if (geminiRes.ok) {
+      return { ok: true, data: await geminiRes.json() };
+    }
+
+    lastErrorText = await geminiRes.text();
+    const isRetryable = geminiRes.status === 503 || geminiRes.status === 429;
+
+    console.error(
+      `Intento ${attempt + 1}/${MAX_RETRIES + 1} falló (status ${geminiRes.status}):`,
+      lastErrorText
+    );
+
+    // Si no es un error reintentable, o ya se acabaron los intentos, salimos.
+    if (!isRetryable || attempt === MAX_RETRIES) {
+      return { ok: false, status: geminiRes.status, errorText: lastErrorText };
+    }
+
+    // Backoff progresivo: 600ms, 1200ms, ...
+    await sleep(RETRY_DELAY_MS * (attempt + 1));
+  }
+
+  return { ok: false, status: 500, errorText: lastErrorText };
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
@@ -45,38 +103,18 @@ export default async function handler(req, res) {
   }
 
   try {
-    const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [
-            {
-              role: 'user',
-              parts: [{ text: `${SYSTEM_CONTEXT}\n\nPregunta del usuario: ${question}` }]
-            }
-          ],
-          generationConfig: {
-            maxOutputTokens: 200,
-            temperature: 0.4
-          }
-        })
-      }
-    );
+    const result = await callGeminiWithRetry(apiKey, question);
 
-    if (!geminiRes.ok) {
-      const errText = await geminiRes.text();
-      console.error('Error de Gemini:', errText);
+    if (!result.ok) {
+      console.error('Error final de Gemini tras reintentos:', result.errorText);
       return res.status(502).json({
         error: 'Error consultando la IA',
-        answer: 'No pude procesar tu consulta en este momento. Escribinos por WhatsApp y te respondemos directo.'
+        answer: 'Estamos con mucha demanda en este momento. Probá de nuevo en unos segundos, o escribinos directo por WhatsApp.'
       });
     }
 
-    const data = await geminiRes.json();
     const answer =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ||
+      result.data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ||
       'No tengo una respuesta clara para eso. ¿Querés que te derive directo por WhatsApp?';
 
     return res.status(200).json({ answer });
