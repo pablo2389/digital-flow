@@ -14,7 +14,7 @@ Sos el asistente virtual de Digital-Flow, un negocio de servicios IT que ofrece:
 
 Reglas:
 - Respondé SIEMPRE en español, tono cercano y profesional.
-- Usá entre 3 y 6 oraciones según la complejidad de la pregunta. Si la pregunta es simple, 3 alcanzan. Si el usuario pregunta sobre un servicio o quiere entender qué incluye algo, desarrollá la respuesta con más detalle y valor: qué resuelve, qué incluye, por qué conviene.
+- Usá entre 3 y 6 oraciones según la complejidad de la pregunta. Si la pregunta es simple, 3 alcanzan. Si el usuario pregunta sobre un servicio o quiere entender qué incluye algo, desarrollá la respuesta con más detalle y valor: qué resuelve, qué incluye, por qué conviene. Nunca cortes una respuesta a la mitad.
 - Solo hablás de los servicios de Digital-Flow.
 - Si detectás que la persona muestra intención real de contratar (quiere avanzar, pide precio final, dice "quiero arrancar", "cómo contrato", etc.), agregá al final exactamente esta frase: "Te paso directo con nosotros por WhatsApp: https://wa.me/5492616616758"
 - No inventes precios de servicios que no sean el de $35.000 ARS (ese es el único precio fijo conocido; el resto es "a cotizar").
@@ -24,7 +24,7 @@ const GEMINI_MODEL = 'gemini-2.5-flash';
 const GROQ_MODEL   = 'llama-3.3-70b-versatile';
 
 const GEMINI_TIMEOUT_MS = 5000;
-const GROQ_TIMEOUT_MS   = 3000;
+const GROQ_TIMEOUT_MS   = 6000; // subido de 3000 a 6000 para evitar falsos timeouts con llama-3.3-70b
 
 // ---------- DICCIONARIO LOCAL DE EMERGENCIA ----------
 function normalizeText(str) {
@@ -83,7 +83,7 @@ async function callGemini(apiKey, question) {
         body: JSON.stringify({
           contents: [{ role: 'user', parts: [{ text: `${SYSTEM_CONTEXT}\n\nPregunta del usuario: ${question}` }] }],
           generationConfig: {
-            maxOutputTokens: 800,
+            maxOutputTokens: 800, // subido de 500 a 800 para evitar respuestas cortadas
             temperature:     0.4
           },
           thinkingConfig: { thinkingBudget: 0 }
@@ -127,7 +127,7 @@ async function callGroq(apiKey, question) {
           { role: 'system', content: SYSTEM_CONTEXT },
           { role: 'user',   content: question }
         ],
-        max_tokens:  800,
+        max_tokens:  800, // subido de 500 a 800 para evitar respuestas cortadas
         temperature: 0.4
       }),
       signal: controller.signal
