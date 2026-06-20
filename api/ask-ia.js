@@ -89,7 +89,7 @@ async function callGemini(apiKey, question) {
         body: JSON.stringify({
           contents: [{ role: 'user', parts: [{ text: `${SYSTEM_CONTEXT}\n\nPregunta del usuario: ${question}` }] }],
           generationConfig: {
-            maxOutputTokens: 500,
+            maxOutputTokens: 800,
             temperature:     0.4
           },
           // Desactivamos el "thinking" interno de Gemini 2.5 Flash:
@@ -137,7 +137,7 @@ async function callGroq(apiKey, question) {
           { role: 'system', content: SYSTEM_CONTEXT },
           { role: 'user',   content: question }
         ],
-        max_tokens:  500,
+        max_tokens:  800,
         temperature: 0.4
       }),
       signal: controller.signal
