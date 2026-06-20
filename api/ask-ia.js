@@ -83,7 +83,7 @@ async function callGemini(apiKey, question) {
         body: JSON.stringify({
           contents: [{ role: 'user', parts: [{ text: `${SYSTEM_CONTEXT}\n\nPregunta del usuario: ${question}` }] }],
           generationConfig: {
-            maxOutputTokens: 800, // subido de 500 a 800 para evitar respuestas cortadas
+            maxOutputTokens: 1500, // subido de 500 a 800 para evitar respuestas cortadas
             temperature:     0.4
           },
           thinkingConfig: { thinkingBudget: 0 }
@@ -127,7 +127,7 @@ async function callGroq(apiKey, question) {
           { role: 'system', content: SYSTEM_CONTEXT },
           { role: 'user',   content: question }
         ],
-        max_tokens:  800, // subido de 500 a 800 para evitar respuestas cortadas
+        max_tokens:  1500, // subido de 500 a 800 para evitar respuestas cortadas
         temperature: 0.4
       }),
       signal: controller.signal
