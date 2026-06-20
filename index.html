@@ -979,7 +979,8 @@ async function askIA(question){
     });
     if(!res.ok) throw new Error('IA endpoint error');
     const data = await res.json();
-    return data.answer || "Esa consulta es bastante específica. Para darte la mejor respuesta, escribinos directo: <a class='wsp-link' href='https://wa.me/5492616616758' target='_blank' rel='noopener'>Hablar por WhatsApp →</a>";
+console.log('Provider:', data.provider, '| Answer:', data.answer);
+return data.answer || "Esa consulta..."
   } catch(err){
     return "Justo ahora tenemos mucha demanda en el asistente. Para no hacerte esperar, escribinos directo y te respondemos al toque: <a class='wsp-link' href='https://wa.me/5492616616758' target='_blank' rel='noopener'>Hablar por WhatsApp →</a>";
   }
