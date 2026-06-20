@@ -13,7 +13,8 @@ Sos el asistente virtual de Digital-Flow, un negocio de servicios IT que ofrece:
 - Armado y gestión de redes sociales
 
 Reglas:
-- Respondé SIEMPRE en español, tono cercano y profesional, breve (máximo 3 oraciones).
+- Respondé SIEMPRE en español, tono cercano y profesional.
+- Usá entre 3 y 6 oraciones según la complejidad de la pregunta. Si la pregunta es simple, 3 alcanzan. Si el usuario pregunta sobre un servicio o quiere entender qué incluye algo, desarrollá la respuesta con más detalle y valor: qué resuelve, qué incluye, por qué conviene.
 - Solo hablás de los servicios de Digital-Flow.
 - Si detectás que la persona muestra intención real de contratar (quiere avanzar, pide precio final, dice "quiero arrancar", "cómo contrato", etc.), agregá al final exactamente esta frase: "Te paso directo con nosotros por WhatsApp: https://wa.me/5492616616758"
 - No inventes precios de servicios que no sean el de $35.000 ARS (ese es el único precio fijo conocido; el resto es "a cotizar").
@@ -22,15 +23,10 @@ Reglas:
 const GEMINI_MODEL = 'gemini-2.5-flash';
 const GROQ_MODEL   = 'llama-3.3-70b-versatile';
 
-// Gemini tiene un tiempo de respuesta más variable que Groq,
-// 5 segundos es un balance razonable: corta rápido si hay problema real,
-// pero no interrumpe respuestas válidas que tardan un poco más de la cuenta.
 const GEMINI_TIMEOUT_MS = 5000;
 const GROQ_TIMEOUT_MS   = 3000;
 
 // ---------- DICCIONARIO LOCAL DE EMERGENCIA ----------
-// Función auxiliar: saca tildes y pasa a minúsculas, igual que en el KB del frontend.
-// Así "¿Cuánto cuesta?" matchea igual que "cuanto cuesta".
 function normalizeText(str) {
   return str
     .toLowerCase()
@@ -39,17 +35,16 @@ function normalizeText(str) {
 }
 
 const LOCAL_DICTIONARY = {
-  precio:   "Nuestra landing page con bot inteligente tiene un valor de entrada de $35.000 ARS. El resto de los servicios se cotizan a medida según tus necesidades.",
-  landing:  "Ofrecemos landing pages profesionales con bot inteligente integrado por $35.000 ARS, ideal para captar clientes en piloto automático.",
-  bot:      "Desarrollamos bots inteligentes para Telegram y WhatsApp Business, automatizando tus respuestas y mejorando tu atención al cliente.",
-  redes:    "Nos encargamos del armado, optimización y gestión de tus redes sociales para mejorar la presencia digital de tu negocio.",
-  google:   "Optimizamos tu perfil de Google Business y SEO local para que aparezcas en los primeros lugares cuando busquen tus servicios.",
+  precio:   "Nuestra landing page con bot inteligente tiene un valor de entrada de $35.000 ARS, todo configurado a medida de tu negocio. El resto de los servicios —bots con IA, Google Business, SEO local, apps— se cotizan según lo que necesitás. Si querés un presupuesto, contanos un poco de tu negocio y te respondemos rápido.",
+  landing:  "Ofrecemos landing pages profesionales con bot inteligente integrado por $35.000 ARS. La página está diseñada para convertir visitas en consultas reales, con botones directos a WhatsApp y Telegram, y lista para vincular a tu perfil de Google Business. Es el punto de partida ideal para tener presencia online funcionando desde el primer día.",
+  bot:      "Desarrollamos bots inteligentes para Telegram y WhatsApp Business, tanto con respuestas automáticas por reglas como con IA conversacional que entiende el contexto real de cada consulta. Esto significa que tu negocio responde al instante, las 24 horas, sin que tengas que estar pendiente del celular. Podemos armarlo híbrido: IA para preguntas complejas y respuestas predefinidas para lo más frecuente.",
+  redes:    "Nos encargamos del armado, optimización y gestión de tus redes sociales para mejorar la presencia digital de tu negocio. Esto incluye crear o corregir perfiles, definir una línea visual coherente y mantener actividad regular para que tus clientes te encuentren y confíen en lo que ofrecés. Es un servicio a cotizar según la cantidad de redes y la frecuencia de publicaciones.",
+  google:   "Optimizamos tu perfil de Google Business y trabajamos el SEO local para que aparezcas cuando alguien busca tu rubro en tu zona, no solo cuando ya saben tu nombre. Un perfil bien armado genera más llamadas, más visitas y más confianza sin pagar publicidad. Si todavía no tenés perfil, también lo creamos desde cero.",
   contacto: "Podés comunicarte directamente con nosotros para coordinar. Te dejo nuestro WhatsApp: https://wa.me/5492616616758",
-  defecto:  "¡Hola! Somos Digital-Flow. Ofrecemos landing pages con bot por $35.000 ARS, desarrollo de apps, bots de WhatsApp/Telegram y gestión de redes. ¿En qué servicio estás interesado?"
+  defecto:  "¡Hola! Somos Digital-Flow. Ofrecemos landing pages con bot inteligente por $35.000 ARS, bots para WhatsApp y Telegram, optimización de Google Business, SEO local y desarrollo de apps a medida. Todo pensado para que tu negocio esté online y respondiendo solo, sin que necesites saber de tecnología. ¿En qué servicio estás interesado?"
 };
 
 function getLocalFallbackResponse(question) {
-  // Normalizamos igual que el KB del frontend: sin tildes, en minúsculas
   const q = normalizeText(question);
   let baseAnswer = LOCAL_DICTIONARY.defecto;
 
@@ -67,7 +62,6 @@ function getLocalFallbackResponse(question) {
     baseAnswer = LOCAL_DICTIONARY.contacto;
   }
 
-  // Si muestra intención de contratar, sumamos el link de WhatsApp
   if (q.includes('quiero') || q.includes('contratar') || q.includes('comprar') || q.includes('arrancar') || q.includes('empezar')) {
     baseAnswer += ' Te paso directo con nosotros por WhatsApp: https://wa.me/5492616616758';
   }
@@ -92,10 +86,6 @@ async function callGemini(apiKey, question) {
             maxOutputTokens: 800,
             temperature:     0.4
           },
-          // Desactivamos el "thinking" interno de Gemini 2.5 Flash:
-          // sin esto, el modelo gasta parte del presupuesto de tokens
-          // en razonamiento invisible, dejando menos espacio para el texto visible
-          // y causando respuestas cortadas. Para consultas simples no lo necesitamos.
           thinkingConfig: { thinkingBudget: 0 }
         }),
         signal: controller.signal
